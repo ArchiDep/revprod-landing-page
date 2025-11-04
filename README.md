@@ -4,8 +4,8 @@ Landing page for The Revolutionary Product, a multi-component web application to
 illustrate [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 and [reverse proxying](https://en.wikipedia.org/wiki/Reverse_proxy).
 
-[![build](https://github.com/MediaComem/revprod-landing-page/actions/workflows/build.yml/badge.svg)](https://github.com/MediaComem/revprod-landing-page/actions/workflows/build.yml)
-[![license](https://img.shields.io/github/license/MediaComem/big-browser)](https://opensource.org/licenses/MIT)
+[![build](https://github.com/ArchiDep/revprod-landing-page/actions/workflows/build.yml/badge.svg)](https://github.com/ArchiDep/revprod-landing-page/actions/workflows/build.yml)
+[![license](https://img.shields.io/github/license/ArchiDep/revprod-landing-page)](https://opensource.org/licenses/MIT)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -20,13 +20,13 @@ and [reverse proxying](https://en.wikipedia.org/wiki/Reverse_proxy).
 
 ## Requirements
 
-- [Node.js][node] 22.x
+- [Node.js][node] 24.x
 
 ## Development
 
 ```bash
 # Clone and move into the repository
-git clone https://github.com/MediaComem/revprod-landing-page.git
+git clone https://github.com/ArchiDep/revprod-landing-page.git
 cd revprod-landing-page
 
 # Install dependencies
@@ -40,7 +40,7 @@ npm run dev
 
 ```bash
 # Clone and move into the repository
-git clone https://github.com/MediaComem/revprod-landing-page.git
+git clone https://github.com/ArchiDep/revprod-landing-page.git
 cd revprod-landing-page
 
 # Install dependencies
