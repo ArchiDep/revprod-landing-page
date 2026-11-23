@@ -1,0 +1,50 @@
+# https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+[project]
+name = "revprod-landing-page"
+version = "4.0.0"
+description = "Landing page of the website for The Revolutionary Product"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Simon Oulevay" }]
+requires-python = ">=3.12"
+# The application uses only the standard library, so that it runs with the
+# python3 command of the server and nothing else: Python 3.12 on Ubuntu 24.04,
+# 3.14 on Ubuntu 26.04.
+dependencies = []
+
+# https://docs.astral.sh/uv/concepts/projects/dependencies/#development-dependencies
+[dependency-groups]
+dev = ["pytest==9.2.0", "ruff==0.17.4"]
+
+# https://docs.astral.sh/uv/reference/settings/
+[tool.uv]
+# The application is run from the repository, not installed as a package.
+package = false
+
+# https://docs.pytest.org/en/stable/reference/customize.html#pyproject-toml
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = ["--strict-markers"]
+
+# https://docs.astral.sh/ruff/configuration/
+[tool.ruff.lint]
+select = [
+  # pycodestyle
+  "E",
+  "W",
+  # Pyflakes
+  "F",
+  # isort
+  "I",
+  # pep8-naming
+  "N",
+  # pyupgrade
+  "UP",
+  # flake8-bugbear
+  "B",
+  # flake8-simplify
+  "SIM",
+  # Ruff-specific rules
+  "RUF",
+]

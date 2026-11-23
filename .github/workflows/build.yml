@@ -3,33 +3,79 @@ name: build
 on:
   push:
     branches:
-      - '**/*'
+      - '**'
   workflow_dispatch:
 
 jobs:
-  build:
-    name: build
-    runs-on: ubuntu-24.04
+  test:
+    name: test (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The oldest version supported, that of Ubuntu 24.04.
+          - name: Python 3.12
+            python-version: '3.12'
+          # The development version, in .tool-versions.
+          - name: Python from .tool-versions
+            python-version: ''
     steps:
       # https://github.com/actions/checkout
       - name: Checkout the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+
+      # https://github.com/astral-sh/setup-uv
+      #
+      # Installs the versions of uv and Python in .tool-versions, unless
+      # python-version is set, which takes precedence.
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v10.4.0
+        with:
+          version-file: .tool-versions
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Run the automated tests
+        run: uv run --locked pytest
+
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout the repository
+        uses: actions/checkout@v7
 
       # https://github.com/actions/setup-node
-      - uses: actions/setup-node@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v7
         with:
           node-version-file: .tool-versions
           cache: npm
 
+      # https://github.com/astral-sh/setup-uv
+      #
+      # Installs the versions of uv and Python in .tool-versions.
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v10.4.0
+        with:
+          version-file: .tool-versions
+          enable-cache: true
+
       - name: Install dependencies
         run: |
           npm ci
+          uv sync --locked
 
-      - name: Check source code formatting
-        run: |
-          npm run format
+      - name: Check tables of contents
+        run: npm run doctoc
 
-      - name: Ensure there are no uncommitted changes
-        run: |
-          git status --porcelain
-          test -z "$(git status --porcelain)"
+      - name: Check source code formatting with Prettier
+        run: npm run format
+
+      - name: Check Python code formatting with Ruff
+        run: uv run --locked ruff format --check
+
+      - name: Check Python code with Ruff's linter
+        run: uv run --locked ruff check

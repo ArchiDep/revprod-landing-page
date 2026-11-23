@@ -1,0 +1,5 @@
+# https://prettier.io/docs/ignore
+/.pytest_cache
+/.ruff_cache
+/.venv
+/uv.lock
