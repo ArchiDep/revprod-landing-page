@@ -93,6 +93,22 @@ def test_a_client_that_sends_nothing_is_disconnected(server, monkeypatch):
         assert client.recv(4096) == b""
 
 
+def test_health_check(server):
+    assert request(server, "GET", "/health") == (
+        200,
+        "text/plain; charset=utf-8",
+        b"OK",
+    )
+
+
+def test_health_check_is_not_logged(server, caplog):
+    caplog.set_level("INFO", logger="revprod_landing.server")
+
+    request(server, "GET", "/health")
+
+    assert caplog.records == []
+
+
 def test_requests_are_logged(server, caplog):
     caplog.set_level("INFO", logger="revprod_landing.server")
 

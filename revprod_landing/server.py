@@ -33,7 +33,10 @@ class LandingPageServer(ThreadingHTTPServer):
 
 
 class LandingPageHandler(BaseHTTPRequestHandler):
-    """Serves the landing page at "/" and an error page for anything else."""
+    """
+    Serves the landing page at "/", a health check at "/health" and an error
+    page for anything else.
+    """
 
     server: LandingPageServer
 
@@ -48,13 +51,27 @@ class LandingPageHandler(BaseHTTPRequestHandler):
     def do_HEAD(self) -> None:
         self._respond(include_body=False)
 
+    def log_request(self, code: int | str = "-", size: int | str = "-") -> None:
+        # A health check every few seconds would fill the logs.
+        if self._is_health_check():
+            return
+
+        super().log_request(code, size)
+
     def log_message(self, format: str, *args: object) -> None:
         # The base class writes to standard error; use the logging module
         # instead, so that the log level applies.
         message = (format % args).translate(_LOG_ESCAPES)
         logger.info("%s - %s", self.address_string(), message)
 
+    def _is_health_check(self) -> bool:
+        return urlsplit(self.path).path == "/health"
+
     def _respond(self, include_body: bool) -> None:
+        if self._is_health_check():
+            self._send(HTTPStatus.OK, "text/plain; charset=utf-8", "OK", include_body)
+            return
+
         config = self.server.config
 
         try:
@@ -69,9 +86,14 @@ class LandingPageHandler(BaseHTTPRequestHandler):
             status = HTTPStatus.INTERNAL_SERVER_ERROR
             page = f"<h1>{status.value} {status.phrase}</h1>\n"
 
-        body = page.encode("utf-8")
+        self._send(status, "text/html; charset=utf-8", page, include_body)
+
+    def _send(
+        self, status: HTTPStatus, content_type: str, text: str, include_body: bool
+    ) -> None:
+        body = text.encode("utf-8")
         self.send_response(status)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
 
