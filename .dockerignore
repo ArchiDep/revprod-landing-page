@@ -1,0 +1,9 @@
+# https://docs.docker.com/build/concepts/context/#dockerignore-files
+# The build reads the application, its tests and its locked test dependencies
+# only.
+*
+!pyproject.toml
+!uv.lock
+!revprod_landing/
+!tests/
+**/__pycache__
